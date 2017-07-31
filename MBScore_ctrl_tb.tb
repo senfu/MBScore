@@ -1,0 +1,55 @@
+`timescale 1 ns/ 1 ns
+module MBScore_ctrl_tb();
+reg clk;
+reg [31:0] inst;
+reg rst;                                          
+wire IR_we;
+wire [3:0]  alu_op_type;
+wire [1:0]  alu_sel_a;
+wire [1:0]  alu_sel_b;
+wire alu_sel_shamt;
+wire inst_re;
+wire pc_we;
+wire [3:0]  state;
+wire alu_start;
+                     
+MBScore_ctrl i1 (
+	.IR_we(IR_we),
+	.alu_op_type(alu_op_type),
+	.alu_sel_a(alu_sel_a),
+	.alu_sel_b(alu_sel_b),
+	.alu_sel_shamt(alu_sel_shamt),
+	.clk(clk),
+	.inst(inst),
+	.inst_re(inst_re),
+	.pc_we(pc_we),
+	.rst(rst),
+	.state(state),
+    .alu_start(alu_start)
+);
+
+initial
+begin
+    rst = 0;
+    clk = 0;
+    #100 rst = 1;
+    #100 rst = 0;
+end
+
+always
+begin
+    forever #50 clk = ~clk;
+end
+
+always @(posedge inst_re)
+begin
+    inst = 32'b00111010101010100000000000000001;
+end
+
+always @(negedge inst_re)
+begin
+	inst = 32'd0;
+end
+
+endmodule
+
