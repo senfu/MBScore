@@ -84,7 +84,8 @@ module MBScore_ctrl(
 				end
 				`ID: 	
 				begin
-					if(inst[31:26] == `OPCODE_CALC)
+					case(inst[31:26])
+					`OPCODE_CALC:
 						begin
 							case(inst[5:0])
 								`FUNCT_ADD,`FUNCT_ADDU,`FUNCT_SUB,`FUNCT_SUBU,`FUNCT_AND,
@@ -102,74 +103,57 @@ module MBScore_ctrl(
 									end
 								default: ;
 							endcase
-							
-							case(inst[5:0])
-								`FUNCT_ADD				:	alu_op_type = `ALU_OP_ADD;
-								`FUNCT_ADDU				:	alu_op_type = `ALU_OP_ADDU;
-								`FUNCT_SUB				:	alu_op_type = `ALU_OP_SUB;
-								`FUNCT_SUBU				:	alu_op_type = `ALU_OP_SUBU;
-								`FUNCT_AND				: 	alu_op_type = `ALU_OP_AND;
-								`FUNCT_OR				:	alu_op_type = `ALU_OP_OR;
-								`FUNCT_XOR				:  	alu_op_type = `ALU_OP_XOR;
-								`FUNCT_NOR				:  	alu_op_type = `ALU_OP_NOR;
-								`FUNCT_SLT				:  	alu_op_type = `ALU_OP_LT;
-								`FUNCT_SLTU				:	alu_op_type = `ALU_OP_LTU;
-								`FUNCT_SLLV,`FUNCT_SLL	:	alu_op_type = `ALU_OP_SLL;
-								`FUNCT_SRLV,`FUNCT_SRL	:	alu_op_type = `ALU_OP_SRL;
-								`FUNCT_SRAV,`FUNCT_SRA  :	alu_op_type = `ALU_OP_SRA;
-								default:	;
-							endcase
 						end
-					else
-					if(inst[31:26] == `OPCODE_ADDI || inst[31:26] == `OPCODE_ADDIU ||
-					   inst[31:26] == `OPCODE_ANDI || inst[31:26] == `OPCODE_ORI   ||
-					   inst[31:26] == `OPCODE_XORI)
-						begin
-							alu_sel_a = `ALU_SEL_RS;
-							alu_sel_b = `ALU_SEL_IMM;
-							case(inst[31:26])
-								`OPCODE_ADDI 	: alu_op_type = `ALU_OP_ADD;
-								`OPCODE_ADDIU	: alu_op_type = `ALU_OP_ADD;
-								`OPCODE_ANDI	: alu_op_type = `ALU_OP_AND;
-								`OPCODE_ORI		: alu_op_type = `ALU_OP_OR;
-								`OPCODE_XORI	: alu_op_type = `ALU_OP_XOR;
-							default:;
-							endcase
-						end
-					else
-					if(inst[31:26] == `OPCODE_BEQ)
-						begin
-							alu_sel_a 	= `ALU_SEL_RS;
-							alu_sel_b 	= `ALU_SEL_RT;
-							alu_op_type = `ALU_OP_EQ;
-						end
-					else
-					if(inst[31:26] == `OPCODE_BNE)
-						begin
-							alu_sel_a 	= `ALU_SEL_RS;
-							alu_sel_b 	= `ALU_SEL_RT;
-							alu_op_type = `ALU_OP_NE;
-						end
-					else
-					if(inst[31:26] == `OPCODE_SLTI)
+
+					`OPCODE_ADDI,`OPCODE_ADDIU,`OPCODE_ANDI,`OPCODE_ORI,
+					`OPCODE_XORI,`OPCODE_SLTI,`OPCODE_SLTI:
 						begin
 							alu_sel_a 	= `ALU_SEL_RS;
 							alu_sel_b 	= `ALU_SEL_IMM;
-							alu_op_type = `ALU_OP_LT; 
 						end
-					else
-					if(inst[31:26] == `OPCODE_SLTIU)
+					
+					`OPCODE_BEQ,`OPCODE_BNE:
 						begin
-					  		alu_sel_a 	= `ALU_SEL_RS;
-							alu_sel_b 	= `ALU_SEL_IMM;
-							alu_op_type = `ALU_OP_LTU; 
+							alu_sel_a 	= `ALU_SEL_RS;
+							alu_sel_b 	= `ALU_SEL_RT;
 						end
-					else
-						begin
-						  
-						end
+					default: ;
+					endcase
 				end
-				`EXE: alu_start = 1'b1;
+				`EXE: 
+				begin
+					case(inst[31:26])
+						`OPCODE_CALC	:
+							begin
+								case(inst[5:0])
+									`FUNCT_ADD				:	alu_op_type = `ALU_OP_ADD;
+									`FUNCT_ADDU				:	alu_op_type = `ALU_OP_ADDU;
+									`FUNCT_SUB				:	alu_op_type = `ALU_OP_SUB;
+									`FUNCT_SUBU				:	alu_op_type = `ALU_OP_SUBU;
+									`FUNCT_AND				: 	alu_op_type = `ALU_OP_AND;
+									`FUNCT_OR				:	alu_op_type = `ALU_OP_OR;
+									`FUNCT_XOR				:  	alu_op_type = `ALU_OP_XOR;
+									`FUNCT_NOR				:  	alu_op_type = `ALU_OP_NOR;
+									`FUNCT_SLT				:  	alu_op_type = `ALU_OP_LT;
+									`FUNCT_SLTU				:	alu_op_type = `ALU_OP_LTU;
+									`FUNCT_SLLV,`FUNCT_SLL	:	alu_op_type = `ALU_OP_SLL;
+									`FUNCT_SRLV,`FUNCT_SRL	:	alu_op_type = `ALU_OP_SRL;
+									`FUNCT_SRAV,`FUNCT_SRA  :	alu_op_type = `ALU_OP_SRA;
+									default:	;
+								endcase
+							end
+						`OPCODE_ADDI 	: alu_op_type = `ALU_OP_ADD;
+						`OPCODE_ADDIU	: alu_op_type = `ALU_OP_ADD;
+						`OPCODE_ANDI	: alu_op_type = `ALU_OP_AND;
+						`OPCODE_ORI		: alu_op_type = `ALU_OP_OR;
+						`OPCODE_XORI	: alu_op_type = `ALU_OP_XOR;
+						`OPCODE_BEQ		: alu_op_type = `ALU_OP_EQ;
+						`OPCODE_BNE		: alu_op_type = `ALU_OP_NE;
+						`OPCODE_SLTI	: alu_op_type = `ALU_OP_LT; 
+						`OPCODE_SLTIU	: alu_op_type = `ALU_OP_LTU;
+						default:;
+					endcase
+				end
 				`MEM: ;
 				`WB:;
 			default:;
