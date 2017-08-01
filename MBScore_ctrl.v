@@ -1,4 +1,12 @@
+`resetall
 `include "MBScore_const.v"
+`define WB_SEL_WIDTH    2
+`define IMM_WIDTH       16
+`define GPR_NUM         32
+`define ADDR_WIDTH      32
+`define DATA_WIDTH      32
+`define REG_ADDR_WIDTH  5
+
 module MBScore_ctrl(
 	input 									clk,
 	input 									rst,
@@ -7,8 +15,15 @@ module MBScore_ctrl(
 	output reg								IR_we,
 	output reg [`ALU_SEL_WIDTH-1:0]			alu_sel_a,
 	output reg [`ALU_SEL_WIDTH-1:0]			alu_sel_b,
-	output reg 								alu_sel_shamt,
 	output reg [`ALU_OP_WIDTH-1:0]			alu_op_type,
+	output [`REG_ADDR_WIDTH-1:0]			rs_addr,
+	output [`REG_ADDR_WIDTH-1:0]			rd_addr,
+	output [`REG_ADDR_WIDTH-1:0]			rt_addr,
+	output 									reg_we,
+	output 									reg_re,
+	output [`IMM_WIDTH-1:0]					imm,
+	output [25:0]							jump_addr,
+	output [`WB_SEL_WIDTH-1:0]				WB_sel,
 	output [3:0]							state
 );
 	reg [3:0] curState,nextState;
@@ -66,19 +81,16 @@ module MBScore_ctrl(
 	
 	always @(curState)
 	begin
-		inst_re = 1'b0;
 		pc_we = 1'b0;
 		IR_we = 1'b0;
 		alu_sel_a = 2'd0;
 		alu_sel_b = 2'd0;
 		alu_op_type = 4'd0;
-		alu_start = 1'b0;
 		if(!rst)
 		begin
 			case(curState)
 				`IF:
 				begin
-					inst_re 	= 1'b1;
 					pc_we 		= 1'b1;
 					IR_we		= 1'b1;
 				end
@@ -154,7 +166,6 @@ module MBScore_ctrl(
 						default:;
 					endcase
 				end
-				`MEM: ;
 				`WB:;
 			default:;
 			endcase

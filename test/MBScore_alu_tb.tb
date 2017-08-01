@@ -1,0 +1,32 @@
+`timescale 1 ns/ 1 ns
+`include "MBScore_const.v"
+module MBScore_alu_tb();
+    reg      [`DATA_WIDTH-1:0]     alu_in_a;
+    reg      [`DATA_WIDTH-1:0]     alu_in_b;
+    reg      [`ALU_OP_WIDTH-1:0]   alu_op_type;
+    wire [`DATA_WIDTH-1:0]         alu_out;
+    wire                           cf;
+    reg                            rst;
+
+    MBScore_alu i1(
+        .rst(rst),
+        .alu_in_a(alu_in_a),
+        .alu_in_b(alu_in_b),
+        .alu_op_type(alu_op_type),
+        .alu_out(alu_out),
+        .cf(cf)
+    );
+
+    initial
+    begin
+        #100 rst = 1;
+        #100 rst = 0;
+        #100
+        alu_in_a = 32'b10000000000000000000000000000011;
+        alu_in_b = 32'b10000000000000000000000000000111;
+        alu_op_type = `ALU_OP_ADD;
+        #100
+        alu_op_type = `ALU_OP_ADDU;
+    end
+
+endmodule 

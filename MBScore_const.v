@@ -1,6 +1,10 @@
-`define GPR_NUM 16
-`define ADDR_WIDTH 32
-`define DATA_WIDTH 32
+`resetall
+
+`define IMM_WIDTH       16
+`define GPR_NUM         32
+`define ADDR_WIDTH      32
+`define DATA_WIDTH      32
+`define REG_ADDR_WIDTH  5
 
 `define IDLE 3'b000
 `define IF   3'b001
@@ -48,23 +52,28 @@
 `define FUNCT_SPRRD		6'b000100
 
 `define ALU_OP_WIDTH 	4
-`define ALU_OP_ADD		`ALU_OP_WIDTH'd0
-`define ALU_OP_SUB		`ALU_OP_WIDTH'd1
-`define ALU_OP_AND		`ALU_OP_WIDTH'd2
-`define ALU_OP_OR		`ALU_OP_WIDTH'd3
-`define ALU_OP_XOR		`ALU_OP_WIDTH'd4
-`define ALU_OP_NOR		`ALU_OP_WIDTH'd5
-`define ALU_OP_SLL		`ALU_OP_WIDTH'd6
-`define ALU_OP_SRL		`ALU_OP_WIDTH'd7
-`define ALU_OP_SRA		`ALU_OP_WIDTH'd8
-`define ALU_OP_EQ		`ALU_OP_WIDTH'd9
-`define ALU_OP_NE		`ALU_OP_WIDTH'd10
-`define ALU_OP_LT		`ALU_OP_WIDTH'd11
-`define ALU_OP_ADDU     `ALU_OP_WIDTH'd12
-`define ALU_OP_SUBU     `ALU_OP_WIDTH'd13
-`define ALU_OP_LTU      `ALU_OP_WIDTH'd14
+`define ALU_OP_ADD		`ALU_OP_WIDTH'd1
+`define ALU_OP_SUB		`ALU_OP_WIDTH'd2
+`define ALU_OP_AND		`ALU_OP_WIDTH'd3
+`define ALU_OP_OR		`ALU_OP_WIDTH'd4
+`define ALU_OP_XOR		`ALU_OP_WIDTH'd5
+`define ALU_OP_NOR		`ALU_OP_WIDTH'd6
+`define ALU_OP_SLL		`ALU_OP_WIDTH'd7
+`define ALU_OP_SRL		`ALU_OP_WIDTH'd8
+`define ALU_OP_SRA		`ALU_OP_WIDTH'd9
+`define ALU_OP_EQ		`ALU_OP_WIDTH'd10
+`define ALU_OP_NE		`ALU_OP_WIDTH'd11
+`define ALU_OP_LT		`ALU_OP_WIDTH'd12
+`define ALU_OP_ADDU     `ALU_OP_WIDTH'd13
+`define ALU_OP_SUBU     `ALU_OP_WIDTH'd14
+`define ALU_OP_LTU      `ALU_OP_WIDTH'd15
 
 `define ALU_SEL_WIDTH   2
 `define ALU_SEL_RS		`ALU_SEL_WIDTH'd1
 `define ALU_SEL_RT		`ALU_SEL_WIDTH'd2
 `define ALU_SEL_IMM		`ALU_SEL_WIDTH'd3
+
+`define WB_SEL_WIDTH    2
+`define WB_SEL_ALUtoReg `WB_SEL_WIDTH'd1
+`define WB_SEL_ALUtoMEM `WB_SEL_WIDTH'd2
+`define WB_SEL_MEMtoReg `WB_SEL_WIDTH'd3

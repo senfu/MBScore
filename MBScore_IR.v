@@ -1,3 +1,4 @@
+`resetall
 `include "MBScore_const.v"
 module MBScore_IR(clk,IR_we,in_data,out_data);
 	input 							clk,IR_we;
