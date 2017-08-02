@@ -74,6 +74,7 @@
 `define ALU_SEL_IMM		`ALU_SEL_WIDTH'd3
 
 `define WB_SEL_WIDTH    2
-`define WB_SEL_ALUtoReg `WB_SEL_WIDTH'd1
-`define WB_SEL_ALUtoMEM `WB_SEL_WIDTH'd2
-`define WB_SEL_MEMtoReg `WB_SEL_WIDTH'd3
+`define WB_SEL_ALUtoIR  `WB_SEL_WIDTH'd3
+`define WB_SEL_ALUtoReg `WB_SEL_WIDTH'd0
+`define WB_SEL_ALUtoMEM `WB_SEL_WIDTH'd1
+`define WB_SEL_MEMtoReg `WB_SEL_WIDTH'd2

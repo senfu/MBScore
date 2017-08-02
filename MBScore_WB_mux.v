@@ -19,6 +19,7 @@ module MBScore_WB_mux(
         `WB_SEL_ALUtoReg: WB_to_reg = alu_out;
         `WB_SEL_ALUtoMEM: WB_to_mem = alu_out;
         `WB_SEL_MEMtoReg: WB_to_reg = mem_data_in;
+        `WB_SEL_ALUtoIR : jump      = alu_out[0];
         default:;
         endcase
     end

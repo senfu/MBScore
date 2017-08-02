@@ -1,11 +1,4 @@
-`resetall
 `include "MBScore_const.v"
-`define WB_SEL_WIDTH    2
-`define IMM_WIDTH       16
-`define GPR_NUM         32
-`define ADDR_WIDTH      32
-`define DATA_WIDTH      32
-`define REG_ADDR_WIDTH  5
 
 module MBScore_ctrl(
 	input 									clk,
@@ -22,8 +15,8 @@ module MBScore_ctrl(
 	output 									reg_we,
 	output 									reg_re,
 	output [`IMM_WIDTH-1:0]					imm,
-	output [25:0]							jump_addr,
 	output [`WB_SEL_WIDTH-1:0]				WB_sel,
+	output reg								JAL_or_J,BEQ_or_BNE,JR,hlt,
 	output [3:0]							state
 );
 	reg [3:0] curState,nextState;
@@ -31,6 +24,10 @@ module MBScore_ctrl(
 /************Debug*****************/
 	assign state = curState;
 /**********************************/
+
+	assign rs_addr = inst[25:21];
+	assign rt_addr = ( inst[31:26] == `OPCODE_JAL )? 5'd31 : inst[20:16];
+	assign rd_addr = inst[16:12];
 	
 	
 	always @(posedge clk or posedge rst)
@@ -63,6 +60,9 @@ module MBScore_ctrl(
 						  inst[31:26] == `OPCODE_HLT)
 								nextState = `IF;
 						else
+					if(inst[31:26] == `OPCODE_LUI || inst[31:26] == `OPCODE_SPECIAL)
+								nextState = `WB;
+						else
 								nextState = `EXE;
 					
 				end
@@ -81,18 +81,13 @@ module MBScore_ctrl(
 	
 	always @(curState)
 	begin
-		pc_we = 1'b0;
-		IR_we = 1'b0;
-		alu_sel_a = 2'd0;
-		alu_sel_b = 2'd0;
-		alu_op_type = 4'd0;
 		if(!rst)
 		begin
 			case(curState)
 				`IF:
 				begin
-					pc_we 		= 1'b1;
-					IR_we		= 1'b1;
+					pc_we = 1'b1;
+					IR_we = 1'b1;
 				end
 				`ID: 	
 				begin
@@ -113,6 +108,11 @@ module MBScore_ctrl(
 										alu_sel_a = `ALU_SEL_IMM;
 										alu_sel_b = `ALU_SEL_RT;
 									end
+								`FUNCT_JR:
+									begin
+										JR 	 = 1'b1;
+										next = 1'b1;
+									end
 								default: ;
 							endcase
 						end
@@ -129,8 +129,28 @@ module MBScore_ctrl(
 							alu_sel_a 	= `ALU_SEL_RS;
 							alu_sel_b 	= `ALU_SEL_RT;
 						end
+					
+					`OPCODE_HLT:
+						begin
+							hlt  = 1'b1;
+							next = 1'b1;
+						end
+					`OPCODE_J:
+						begin
+							JAL_or_J = 1'b1;
+							next     = 1'b1;
+						end
+					`OPCODE_JAL:
+						begin
+							reg_re   = 1'b1;
+							JAL_or_J = 1'b1;
+							next     = 1'b1;  
+						end
 					default: ;
 					endcase
+
+					reg_re = 1'b1;
+
 				end
 				`EXE: 
 				begin
@@ -166,7 +186,27 @@ module MBScore_ctrl(
 						default:;
 					endcase
 				end
-				`WB:;
+				`WB:
+				begin
+					if(inst[31:26] == `OPCODE_LW)
+					begin
+						WB_sel = WB_SEL_MEMtoReg;
+						reg_we = 1'b1;
+					end
+					else
+					if(inst[31:26] == `OPCODE_BEQ || inst[31:26] == `OPCODE_BNE)
+						WB_sel = WB_SEL_ALUtoIR;
+					else
+					if(inst[31:26] == OPCODE_SW)
+						WB_sel = WB_SEL_ALUtoMEM;
+					else
+					begin
+						WB_sel = WB_SEL_ALUtoReg;
+						reg_we = 1'b1;
+					end
+
+					next = 1'b1;
+				end;
 			default:;
 			endcase
 		end
