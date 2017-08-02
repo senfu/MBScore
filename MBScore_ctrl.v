@@ -13,7 +13,6 @@ module MBScore_ctrl(
 	output [`REG_ADDR_WIDTH-1:0]			rd_addr,
 	output [`REG_ADDR_WIDTH-1:0]			rt_addr,
 	output 									reg_we,
-	output 									reg_re,
 	output [`IMM_WIDTH-1:0]					imm,
 	output [`WB_SEL_WIDTH-1:0]				WB_sel,
 	output reg								JAL_or_J,BEQ_or_BNE,JR,hlt,
@@ -142,15 +141,12 @@ module MBScore_ctrl(
 						end
 					`OPCODE_JAL:
 						begin
-							reg_re   = 1'b1;
+							reg_we   = 1'b1;
 							JAL_or_J = 1'b1;
 							next     = 1'b1;  
 						end
 					default: ;
 					endcase
-
-					reg_re = 1'b1;
-
 				end
 				`EXE: 
 				begin

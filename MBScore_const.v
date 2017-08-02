@@ -1,5 +1,3 @@
-`resetall
-
 `define IMM_WIDTH       16
 `define GPR_NUM         32
 `define ADDR_WIDTH      32

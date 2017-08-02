@@ -1,4 +1,3 @@
-`resetall
 `include "MBScore_const.v"
 `define WB_SEL_WIDTH    2
 `define WB_SEL_ALUtoReg `WB_SEL_WIDTH'd1
